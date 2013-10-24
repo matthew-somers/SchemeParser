@@ -30,6 +30,18 @@ public class Scanner
         return tokens.remove(0);
     }
     
+    public Token peekNext()
+    {
+        while (tokens.size() == 0 && file.hasNextLine())
+        {
+            tokens.addAll(getTokens(file.nextLine()));
+        }
+        if (!hasNextToken())
+            return null;
+        // System.out.printf("Reading Token: %s\n", tokens.get(0).getName());
+        return tokens.get(0);
+    }
+    
     private static ArrayList<Token> getTokens(String line)
     {
         ArrayList<Token> tokens = new ArrayList<Token>();

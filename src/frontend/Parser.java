@@ -19,7 +19,7 @@ public class Parser
             while (s.hasNextToken())
             {
                 depth = 0;
-                System.out.println(Parser.createCodeTree(s));
+                System.out.println(Parser.createCodeTree(s).toString(0));
                 // code.addCodeTree(Parser.createCodeTree(s));
             }
         }
@@ -43,6 +43,13 @@ public class Parser
             {
                 System.out.println("Recursive CodeTree call!");
                 currentPart.setLeft(createCodeTree(s));
+                if (!s.peekNext().getType().equals(Token.Type.Symbol)
+                                || !s.peekNext().getName().equals(")"))
+                {
+                    Blank b = new Blank();
+                    currentPart.setRight(b);
+                    currentPart = b;
+                }
             }
             else if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals(")"))
@@ -54,9 +61,14 @@ public class Parser
             else
             {
                 System.out.printf("Adding node: %s\n", t.getName());
-                currentPart = new Blank();
-                c.setRight((Blank) currentPart);
                 currentPart.setLeft(new Node(t.getName()));
+                if (!s.peekNext().getType().equals(Token.Type.Symbol)
+                                || !s.peekNext().getName().equals(")"))
+                {
+                    Blank b = new Blank();
+                    currentPart.setRight(b);
+                    currentPart = b;
+                }
             }
         }
         return null;

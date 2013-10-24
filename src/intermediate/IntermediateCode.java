@@ -25,25 +25,18 @@ public class IntermediateCode
         }
         
         @Override
-        public String toString()
+        public String toString(int indent)
         {
-            String s = "Code Tree:\n";
-            System.out.println("Printing tree.");
+            String s = spaces(indent);
+            s = s.concat("Code Tree:\n");
             if (left != null)
             {
-                s = s.concat(left.toString());
+                s = s.concat(left.toString(indent + INDENT));
             }
-            else
-            {
-                System.out.println("Left is null.");
-            }
+            s = s.concat(spaces(indent).concat("----------\n"));
             if (right != null)
             {
-                s = s.concat(right.toString());
-            }
-            else
-            {
-                System.out.println("Right is null.");
+                s = s.concat(right.toString(indent + INDENT));
             }
             return s;
         }
@@ -79,9 +72,9 @@ public class IntermediateCode
             }
             
             @Override
-            public String toString()
+            public String toString(int indent)
             {
-                return value.concat("\n");
+                return spaces(indent).concat(value.concat("\n"));
             }
             
             private String value;
@@ -90,31 +83,38 @@ public class IntermediateCode
         public static class Blank extends CodeTree
         {
             @Override
-            public String toString()
+            public String toString(int indent)
             {
-                String s = "Blank\n";
+                String s = spaces(indent);
+                s = s.concat("Blank\n");
                 if (left != null)
                 {
-                    s = s.concat(left.toString());
+                    s = s.concat(left.toString(indent + INDENT));
                 }
-                else
-                {
-                    System.out.println("Left is null.");
-                }
+                s = s.concat(spaces(indent).concat("----------\n"));
                 if (right != null)
                 {
-                    s = s.concat(right.toString());
-                }
-                else
-                {
-                    System.out.println("Right is null.");
+                    s = s.concat(right.toString(indent + INDENT));
                 }
                 return s;
             }
         }
     }
     
-    public static class TreePart
+    public static abstract class TreePart
     {
+        public abstract String toString(int indentation);
+        
+        public static String spaces(int count)
+        {
+            String s = "";
+            for (int i = 0; i < count; i++)
+            {
+                s = s.concat(" ");
+            }
+            return s;
+        }
+        
+        public static final int INDENT = 4;
     }
 }
