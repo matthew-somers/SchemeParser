@@ -4,14 +4,15 @@ public class Token
 {
     public static enum Type
     {
-        Symbol("[()']", ""), Number("[0-9]", "[0-9]"), Word("[a-zA-Z\\+\\^]",
-                        "[a-zA-Z0-9\\+\\-\\*\\?]"), ReservedWord(
-                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member",
-                        ""), List("", "");
-        private Type(String initChars, String okChars)
+        Symbol("[()\\[\\]'{};,.\"#\\\\]", ""), Number("[0-9.]",
+                        "([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)"), Word(
+                        "[a-zA-Z\\+\\^]", "[a-zA-Z0-9\\+\\-\\*\\?]+"), ReservedWord(
+                        "",
+                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member");
+        private Type(String initChars, String format)
         {
             this.initChars = initChars;
-            this.okChars = okChars;
+            this.format = format;
         }
         
         public String getInitChars()
@@ -19,13 +20,13 @@ public class Token
             return initChars;
         }
         
-        public String getOkChars()
+        public String getFormat()
         {
-            return okChars;
+            return format;
         }
         
         private String initChars;
-        private String okChars;
+        private String format;
     }
     
     public Token(Type type, String name)

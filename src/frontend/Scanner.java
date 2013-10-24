@@ -58,7 +58,8 @@ public class Scanner
             }
             else
             {
-                if (s.matches(currentToken.getType().getOkChars()))
+                if (currentToken.getName().concat(s)
+                                .matches(currentToken.getType().getFormat()))
                 {
                     currentToken.setName(currentToken.getName().concat(s));
                 }
@@ -90,7 +91,7 @@ public class Scanner
     {
         if (t.getType() == Token.Type.Word
                         && t.getName().matches(
-                                        Token.Type.ReservedWord.getInitChars()))
+                                        Token.Type.ReservedWord.getFormat()))
         {
             t.setType(Token.Type.ReservedWord);
         }

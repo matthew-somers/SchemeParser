@@ -28,15 +28,17 @@ public class IntermediateCode
         public String toString(int indent)
         {
             String s = spaces(indent);
-            s = s.concat("Code Tree:\n");
+            s = s.concat("(");
             if (left != null)
             {
-                s = s.concat(left.toString(indent + INDENT));
+                s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left
+                                .toString(indent
+                                                + (left instanceof CodeTree ? INDENT
+                                                                : 0))));
             }
-            s = s.concat(spaces(indent).concat("----------\n"));
             if (right != null)
             {
-                s = s.concat(right.toString(indent + INDENT));
+                s = s.concat(right.toString(indent));
             }
             return s;
         }
@@ -74,7 +76,7 @@ public class IntermediateCode
             @Override
             public String toString(int indent)
             {
-                return spaces(indent).concat(value.concat("\n"));
+                return value;
             }
             
             private String value;
@@ -85,16 +87,21 @@ public class IntermediateCode
             @Override
             public String toString(int indent)
             {
-                String s = spaces(indent);
-                s = s.concat("Blank\n");
+                String s = " ";
                 if (left != null)
                 {
-                    s = s.concat(left.toString(indent + INDENT));
+                    s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left
+                                    .toString(indent
+                                                    + (left instanceof CodeTree ? INDENT
+                                                                    : 0))));
                 }
-                s = s.concat(spaces(indent).concat("----------\n"));
                 if (right != null)
                 {
-                    s = s.concat(right.toString(indent + INDENT));
+                    s = s.concat(right.toString(indent));
+                }
+                else
+                {
+                    s = s.concat(")");
                 }
                 return s;
             }
