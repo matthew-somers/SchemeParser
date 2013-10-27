@@ -1,9 +1,13 @@
 package intermediate;
 
+import intermediate.IntermediateCode.CodeTree;
+
 import java.util.TreeMap;
 
 public class SymbolTable
 {
+    private TreeMap<String, ParseTree> symbols;
+    
     public SymbolTable()
     {
         symbols = new TreeMap<String, ParseTree>();
@@ -14,8 +18,42 @@ public class SymbolTable
         return symbols;
     }
     
-    private TreeMap<String, ParseTree> symbols;
+    // string gymnastics, as traversing tree is a pain
+    public void analyzeTree(CodeTree tree)
+    {
+        String[] noformattree = tree.toString(0).split("\n");
+        for (int i = 0; i < noformattree.length; i++)
+        {
+        	noformattree[i] = noformattree[i].trim();
+        	String[] words = noformattree[i].split(" ");
+        	for (int j = 0; j < words.length; j++)
+        	{
+        		words[j] = words[j].replace(')', '\0');
+        		words[j] = words[j].replace('(', '\0');
+        		words[j] = words[j].trim();
+        		
+        		if (!symbols.containsKey(words[j]))
+        		{
+        			symbols.put(words[j], null); //null attributes fine according to spec
+        		}
+        	}
+        }
+    }
     
+    public void printSymbolTable()
+    {
+    	System.out.println("\nSymbol Table: " + symbols.toString());
+    }
+    
+    public void clear()
+    {
+    	symbols.clear();
+    }
+
+    
+    /**
+     * to be used in symbol table for attributes
+     */
     public static class ParseTree
     {
         public ParseTree()

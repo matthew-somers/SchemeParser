@@ -14,9 +14,6 @@
            (diff (map deriv-term terms)))   ; map deriv-term over the terms
       (remove-trailing-plus (polyize diff)) ; finalize the answer
 )))
-
-; Convert an infix polynomial into a list of sublists,
-; where each sublist is a term.
 (define terminize
   (lambda (poly)
     (cond

@@ -1,29 +1,42 @@
 package frontend;
 
+import intermediate.IntermediateCode;
 import intermediate.IntermediateCode.CodeTree;
 import intermediate.IntermediateCode.CodeTree.Blank;
 import intermediate.IntermediateCode.CodeTree.Node;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import backend.CodeGenerator;
+
 public class Parser
 {
     public static void main(String[] args)
     {
+        IntermediateCode icode = new IntermediateCode();
+        CodeTree c = new CodeTree();
+        
         try
         {
-            Scanner s = new Scanner(new File("test.lisp"));
+            Scanner s = new Scanner(new File("test.lisp")); //our own scanner
             s.nextToken();
+
             while (s.hasNextToken())
             {
-                System.out.println(Parser.createCodeTree(s).toString(0));
-                // code.addCodeTree(Parser.createCodeTree(s));
+                c = Parser.createCodeTree(s);
+                System.out.println(c.toString(0));
+                icode.addCodeTree(c);
+                s.nextToken();
             }
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
+        
+        icode.fillSymbolTable();
+        CodeGenerator cg = new CodeGenerator(icode);
+        cg.traverseandprint();
     }
     
     public static CodeTree createCodeTree(Scanner s)
@@ -33,6 +46,7 @@ public class Parser
         while (s.hasNextToken())
         {
             Token t = s.nextToken();
+
             if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals("("))
             {
@@ -45,6 +59,7 @@ public class Parser
                     currentPart = b;
                 }
             }
+
             else if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals(")"))
             {

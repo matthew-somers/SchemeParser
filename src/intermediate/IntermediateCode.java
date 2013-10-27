@@ -4,9 +4,24 @@ import java.util.ArrayList;
 
 public class IntermediateCode
 {
+    private ArrayList<CodeTree> trees;
+    private SymbolTable stable;
+    
     public IntermediateCode()
     {
         trees = new ArrayList<CodeTree>();
+        stable = new SymbolTable();
+    }
+    
+    public void fillSymbolTable()
+    {
+    	stable.clear();
+    	for (CodeTree tree : trees)
+    	{
+    		stable.analyzeTree(tree);
+    	}
+    	
+    	stable.printSymbolTable();
     }
     
     public void addCodeTree(CodeTree tree)
@@ -14,10 +29,13 @@ public class IntermediateCode
         trees.add(tree);
     }
     
-    private ArrayList<CodeTree> trees;
+    
     
     public static class CodeTree extends TreePart
     {
+        protected TreePart left;
+        protected Blank    right;
+        
         public CodeTree()
         {
             left = null;
@@ -63,11 +81,12 @@ public class IntermediateCode
             this.right = right;
         }
         
-        protected TreePart left;
-        protected Blank    right;
+
         
         public static class Node extends TreePart
         {
+            private String value;
+            
             public Node(String value)
             {
                 this.value = value;
@@ -78,8 +97,6 @@ public class IntermediateCode
             {
                 return value;
             }
-            
-            private String value;
         }
         
         public static class Blank extends CodeTree
@@ -110,6 +127,7 @@ public class IntermediateCode
     
     public static abstract class TreePart
     {
+        public static final int INDENT = 4;
         public abstract String toString(int indentation);
         
         public static String spaces(int count)
@@ -121,7 +139,5 @@ public class IntermediateCode
             }
             return s;
         }
-        
-        public static final int INDENT = 4;
     }
 }
