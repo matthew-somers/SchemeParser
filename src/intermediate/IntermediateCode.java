@@ -13,6 +13,15 @@ public class IntermediateCode
         stable = new SymbolTable();
     }
     
+    public void printTrees()
+    {
+    	for (CodeTree tree : trees)
+    	{
+    		System.out.println("\n" + tree.toString(0));
+    	}
+    	
+    }
+    
     public void fillSymbolTable()
     {
     	stable.clear();

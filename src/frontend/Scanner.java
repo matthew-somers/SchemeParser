@@ -26,7 +26,7 @@ public class Scanner
         }
         if (!hasNextToken())
             return null;
-        // System.out.printf("Reading Token: %s\n", tokens.get(0).getName());
+        System.out.printf("Reading %s\n", tokens.get(0).toString());
         return tokens.remove(0);
     }
     

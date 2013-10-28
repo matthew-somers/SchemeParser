@@ -18,13 +18,12 @@ public class Parser
         
         try
         {
-            Scanner s = new Scanner(new File("test.lisp")); //our own scanner
+            Scanner s = new Scanner(new File("input.lisp")); //our own scanner
             s.nextToken();
 
             while (s.hasNextToken())
             {
                 c = Parser.createCodeTree(s);
-                System.out.println(c.toString(0));
                 icode.addCodeTree(c);
                 s.nextToken();
             }

@@ -13,6 +13,7 @@ public class CodeGenerator
 	
 	public void traverseandprint()
 	{
-		
+		System.out.println("\nRebuilding tree:");
+		icode.printTrees();
 	}
 }

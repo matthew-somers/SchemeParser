@@ -32,6 +32,10 @@ public class SymbolTable
         		words[j] = words[j].replace('(', '\0');
         		words[j] = words[j].trim();
         		
+        		//exceptions
+        		if (words[j].equals("") || words[j].equals("'") || words[j].contains("0"))
+        			continue;
+        		
         		if (!symbols.containsKey(words[j]))
         		{
         			symbols.put(words[j], null); //null attributes fine according to spec
