@@ -33,7 +33,8 @@ public class SymbolTable
         		words[j] = words[j].trim();
         		
         		//exceptions
-        		if (words[j].equals("") || words[j].equals("'") || words[j].contains("0"))
+        		if (words[j].equals("") || words[j].equals("'") || words[j].equals("0") 
+        				|| words[j].matches("and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member"))
         			continue;
         		
         		if (!symbols.containsKey(words[j]))

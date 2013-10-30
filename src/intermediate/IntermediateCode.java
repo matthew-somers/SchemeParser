@@ -38,7 +38,11 @@ public class IntermediateCode
         trees.add(tree);
     }
     
-    
+    public void reset()
+    {
+    	trees.clear();
+    	stable.clear();
+    }
     
     public static class CodeTree extends TreePart
     {

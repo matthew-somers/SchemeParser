@@ -1,0 +1,192 @@
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: define
+Reading Token:         Word: deriv
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: lambda
+Reading Token:       Symbol: (
+Reading Token:         Word: poly
+Reading Token:         Word: var
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: let*
+Reading Token:       Symbol: (
+Reading Token:       Symbol: (
+Reading Token:         Word: terms
+Reading Token:       Symbol: (
+Reading Token:         Word: terminize
+Reading Token:         Word: poly
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:         Word: deriv-term
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: lambda
+Reading Token:       Symbol: (
+Reading Token:         Word: term
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: cond
+Reading Token:       Symbol: (
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: null?
+Reading Token:         Word: term
+Reading Token:       Symbol: )
+Reading Token:       Symbol: '
+Reading Token:       Symbol: (
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: not
+Reading Token:       Symbol: (
+Reading Token:         Word: member?
+Reading Token:         Word: var
+Reading Token:         Word: term
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: '
+Reading Token:       Symbol: (
+Reading Token:       Number: 0
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: not
+Reading Token:       Symbol: (
+Reading Token:         Word: member?
+Reading Token:       Symbol: '
+Reading Token:         Word: ^
+Reading Token:         Word: term
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:         Word: upto
+Reading Token:         Word: var
+Reading Token:         Word: term
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: else
+Reading Token:       Symbol: (
+Reading Token:         Word: deriv-term-expo
+Reading Token:         Word: term
+Reading Token:         Word: var
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:         Word: diff
+Reading Token:       Symbol: (
+Reading Token:         Word: map
+Reading Token:         Word: deriv-term
+Reading Token:         Word: terms
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:         Word: remove-trailing-plus
+Reading Token:       Symbol: (
+Reading Token:         Word: polyize
+Reading Token:         Word: diff
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+
+Symbol Table: {^=null, deriv=null, deriv-term=null, deriv-term-expo=null, diff=null, map=null, member?=null, poly=null, polyize=null, remove-trailing-plus=null, term=null, terminize=null, terms=null, upto=null, var=null}
+
+Rebuilding tree:
+
+(define deriv 
+    (lambda 
+        (poly var) 
+        (let* 
+            (
+                (terms 
+                    (terminize poly)) 
+                (deriv-term 
+                    (lambda 
+                        (term 
+                        (cond 
+                            (
+                                (null? term) ' 
+                                () 
+                            (
+                                (not 
+                                    (member? var term)) ' 
+                                (0) 
+                            (
+                                (not 
+                                    (member? ' ^ term)) 
+                                (upto var term)) 
+                            (else 
+                                (deriv-term-expo term var))))) 
+                (diff 
+                    (map deriv-term terms))) 
+            (remove-trailing-plus 
+                (polyize diff)))))
+
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: define
+Reading Token:         Word: terminize
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: lambda
+Reading Token:       Symbol: (
+Reading Token:         Word: poly
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: cond
+Reading Token:       Symbol: (
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: null?
+Reading Token:         Word: poly
+Reading Token:       Symbol: )
+Reading Token:       Symbol: '
+Reading Token:       Symbol: (
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token: ReservedWord: else
+Reading Token:       Symbol: (
+Reading Token:         Word: cons
+Reading Token:       Symbol: (
+Reading Token:         Word: upto
+Reading Token:       Symbol: '
+Reading Token:         Word: +
+Reading Token:         Word: poly
+Reading Token:       Symbol: )
+Reading Token:       Symbol: (
+Reading Token:         Word: terminize
+Reading Token:       Symbol: (
+Reading Token:         Word: after
+Reading Token:       Symbol: '
+Reading Token:         Word: +
+Reading Token:         Word: poly
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+Reading Token:       Symbol: )
+
+Symbol Table: {+=null, after=null, cons=null, poly=null, terminize=null, upto=null}
+
+Rebuilding tree:
+
+(define terminize 
+    (lambda 
+        (poly 
+        (cond 
+            (
+                (null? poly) ' 
+                () 
+            (else 
+                (cons 
+                    (upto ' + poly) 
+                    (terminize 
+                        (after ' + poly)))))))
+

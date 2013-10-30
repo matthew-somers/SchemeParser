@@ -15,6 +15,7 @@ public class Parser
     {
         IntermediateCode icode = new IntermediateCode();
         CodeTree c = new CodeTree();
+        CodeGenerator cg = new CodeGenerator(icode);
         
         try
         {
@@ -25,17 +26,19 @@ public class Parser
             {
                 c = Parser.createCodeTree(s);
                 icode.addCodeTree(c);
+                icode.fillSymbolTable();
+                cg.traverseandprint();
+                System.out.println();
                 s.nextToken();
+
+                //spec says to clear icode and symbol table after each top level list
+                icode.reset();
             }
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
-        
-        icode.fillSymbolTable();
-        CodeGenerator cg = new CodeGenerator(icode);
-        cg.traverseandprint();
     }
     
     public static CodeTree createCodeTree(Scanner s)
