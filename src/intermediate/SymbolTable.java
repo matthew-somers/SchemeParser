@@ -8,14 +8,14 @@ import java.util.TreeMap;
 
 public class SymbolTable
 {
-    private TreeMap<String, CodeTree> symbols;
+    private TreeMap<String, TreePart> symbols;
     
     public SymbolTable()
     {
-        symbols = new TreeMap<String, CodeTree>();
+        symbols = new TreeMap<String, TreePart>();
     }
     
-    public TreeMap<String, CodeTree> getSymbols()
+    public TreeMap<String, TreePart> getSymbols()
     {
         return symbols;
     }
@@ -30,7 +30,7 @@ public class SymbolTable
             {
                 Blank right = tree.getRight();
                 String symbolName = ((Node) right.getLeft()).getValue();
-                CodeTree symbolTree = ((CodeTree) right.getRight().getLeft());
+                TreePart symbolTree = right.getRight().getLeft();
                 // System.out.printf("Adding '%s' to the symTable:\n",
                 // symbolName);
                 // System.out.println(symbolTree.toString(0));

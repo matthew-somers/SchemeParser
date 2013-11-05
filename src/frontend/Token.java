@@ -6,9 +6,10 @@ public class Token
     {
         Symbol("[()\\[\\]'{};,.\"#\\\\]", ""), Number("[0-9.]",
                         "([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)"), Word(
-                        "[a-zA-Z\\+\\^]", "[a-zA-Z0-9\\+\\-\\*\\?]+"), ReservedWord(
+                        "[a-zA-Z\\+\\^\\-\\*/]", "[a-zA-Z0-9\\+\\-\\*\\?]+"), ReservedWord(
                         "",
-                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member");
+                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member|\\+|\\-|\\*|/"), Lambda(
+                        "", "");
         private Type(String initChars, String format)
         {
             this.initChars = initChars;

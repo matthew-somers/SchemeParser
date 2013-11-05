@@ -1,2 +1,1 @@
-(define add (lambda (a b) (+ a b)))
-(add 1 2)
+((lambda (a b) (+ a b)) 1 2)
