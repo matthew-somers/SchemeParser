@@ -6,8 +6,8 @@ import intermediate.IntermediateCode.CodeTree.Blank;
 import intermediate.IntermediateCode.CodeTree.Node;
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import backend.CodeGenerator;
+import backend.Interpreter;
 
 public class Parser
 {
@@ -16,23 +16,25 @@ public class Parser
         IntermediateCode icode = new IntermediateCode();
         CodeTree c = new CodeTree();
         CodeGenerator cg = new CodeGenerator(icode);
-        
+        Interpreter interpreter = new Interpreter();
         try
         {
-            Scanner s = new Scanner(new File("input.lisp")); //our own scanner
+            Scanner s = new Scanner(new File("test.lisp")); // our own scanner
             s.nextToken();
-
+            
             while (s.hasNextToken())
             {
                 c = Parser.createCodeTree(s);
                 icode.addCodeTree(c);
                 icode.fillSymbolTable();
-                cg.traverseandprint();
-                System.out.println();
-                s.nextToken();
-
-                //spec says to clear icode and symbol table after each top level list
+                // cg.traverseandprint();
+                // System.out.println();
+                interpreter.interpret(icode);
+                // spec says to clear icode and symbol table after each top
+                // level list
                 icode.reset();
+                
+                s.nextToken();
             }
         }
         catch (FileNotFoundException e)
@@ -48,7 +50,7 @@ public class Parser
         while (s.hasNextToken())
         {
             Token t = s.nextToken();
-
+            
             if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals("("))
             {
@@ -61,7 +63,7 @@ public class Parser
                     currentPart = b;
                 }
             }
-
+            
             else if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals(")"))
             {
@@ -69,7 +71,7 @@ public class Parser
             }
             else
             {
-                currentPart.setLeft(new Node(t.getName()));
+                currentPart.setLeft(new Node(t.getName(), t.getType()));
                 if (!s.peekNext().getType().equals(Token.Type.Symbol)
                                 || !s.peekNext().getName().equals(")"))
                 {

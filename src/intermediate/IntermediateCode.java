@@ -1,11 +1,12 @@
 package intermediate;
 
 import java.util.ArrayList;
+import frontend.Token.Type;
 
 public class IntermediateCode
 {
     private ArrayList<CodeTree> trees;
-    private SymbolTable stable;
+    private SymbolTable         stable;
     
     public IntermediateCode()
     {
@@ -15,22 +16,22 @@ public class IntermediateCode
     
     public void printTrees()
     {
-    	for (CodeTree tree : trees)
-    	{
-    		System.out.println("\n" + tree.toString(0));
-    	}
-    	
+        for (CodeTree tree : trees)
+        {
+            System.out.println("\n" + tree.toString(0));
+        }
+        
     }
     
     public void fillSymbolTable()
     {
-    	stable.clear();
-    	for (CodeTree tree : trees)
-    	{
-    		stable.analyzeTree(tree);
-    	}
-    	
-    	stable.printSymbolTable();
+        stable.clear();
+        for (CodeTree tree : trees)
+        {
+            stable.analyzeTree(tree);
+        }
+        
+        // stable.printSymbolTable();
     }
     
     public void addCodeTree(CodeTree tree)
@@ -38,10 +39,15 @@ public class IntermediateCode
         trees.add(tree);
     }
     
+    public CodeTree getCodeTree()
+    {
+        return trees.get(0);
+    }
+    
     public void reset()
     {
-    	trees.clear();
-    	stable.clear();
+        trees.clear();
+        stable.clear();
     }
     
     public static class CodeTree extends TreePart
@@ -94,15 +100,25 @@ public class IntermediateCode
             this.right = right;
         }
         
-
-        
         public static class Node extends TreePart
         {
             private String value;
+            private Type   type;
             
-            public Node(String value)
+            public Node(String value, Type type)
             {
                 this.value = value;
+                this.type = type;
+            }
+            
+            public String getValue()
+            {
+                return value;
+            }
+            
+            public Type getType()
+            {
+                return type;
             }
             
             @Override
@@ -141,6 +157,7 @@ public class IntermediateCode
     public static abstract class TreePart
     {
         public static final int INDENT = 4;
+        
         public abstract String toString(int indentation);
         
         public static String spaces(int count)

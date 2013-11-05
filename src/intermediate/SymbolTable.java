@@ -1,19 +1,21 @@
 package intermediate;
 
 import intermediate.IntermediateCode.CodeTree;
-
+import intermediate.IntermediateCode.CodeTree.Blank;
+import intermediate.IntermediateCode.CodeTree.Node;
+import intermediate.IntermediateCode.TreePart;
 import java.util.TreeMap;
 
 public class SymbolTable
 {
-    private TreeMap<String, ParseTree> symbols;
+    private TreeMap<String, CodeTree> symbols;
     
     public SymbolTable()
     {
-        symbols = new TreeMap<String, ParseTree>();
+        symbols = new TreeMap<String, CodeTree>();
     }
     
-    public TreeMap<String, ParseTree> getSymbols()
+    public TreeMap<String, CodeTree> getSymbols()
     {
         return symbols;
     }
@@ -21,78 +23,29 @@ public class SymbolTable
     // string gymnastics, as traversing tree is a pain
     public void analyzeTree(CodeTree tree)
     {
-        String[] noformattree = tree.toString(0).split("\n");
-        for (int i = 0; i < noformattree.length; i++)
+        TreePart left = tree.getLeft();
+        if (left instanceof Node)
         {
-        	noformattree[i] = noformattree[i].trim();
-        	String[] words = noformattree[i].split(" ");
-        	for (int j = 0; j < words.length; j++)
-        	{
-        		words[j] = words[j].replace(')', '\0');
-        		words[j] = words[j].replace('(', '\0');
-        		words[j] = words[j].trim();
-        		
-        		//exceptions
-        		if (words[j].equals("") || words[j].equals("'") || words[j].equals("0") 
-        				|| words[j].matches("and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member"))
-        			continue;
-        		
-        		if (!symbols.containsKey(words[j]))
-        		{
-        			symbols.put(words[j], null); //null attributes fine according to spec
-        		}
-        	}
+            if (((Node) left).getValue().equals("define"))
+            {
+                Blank right = tree.getRight();
+                String symbolName = ((Node) right.getLeft()).getValue();
+                CodeTree symbolTree = ((CodeTree) right.getRight().getLeft());
+                // System.out.printf("Adding '%s' to the symTable:\n",
+                // symbolName);
+                // System.out.println(symbolTree.toString(0));
+                symbols.put(symbolName, symbolTree);
+            }
         }
     }
     
     public void printSymbolTable()
     {
-    	System.out.println("\nSymbol Table: " + symbols.toString());
+        System.out.println("\nSymbol Table: " + symbols.toString());
     }
     
     public void clear()
     {
-    	symbols.clear();
-    }
-
-    
-    /**
-     * to be used in symbol table for attributes
-     */
-    public static class ParseTree
-    {
-        public ParseTree()
-        {
-            left = null;
-            right = null;
-        }
-        
-        public ParseTree getLeft()
-        {
-            return left;
-        }
-        
-        public void setLeft(ParseTree left)
-        {
-            this.left = left;
-        }
-        
-        public ParseTree getRight()
-        {
-            return right;
-        }
-        
-        public void setRight(ParseTree right)
-        {
-            this.right = right;
-        }
-        
-        private ParseTree left;
-        private ParseTree right;
-        
-        public static class Leaf extends ParseTree
-        {
-            
-        }
+        symbols.clear();
     }
 }

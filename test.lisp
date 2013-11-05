@@ -1,1 +1,2 @@
-(define success (lambda (x t) (+ x t)))
+(define add (lambda (a b) (+ a b)))
+(add 1 2)
