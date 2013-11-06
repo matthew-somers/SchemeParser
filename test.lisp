@@ -1,1 +1,3 @@
-((lambda (a b) (+ a b)) 1 2)
+(define factorial (lambda (x)
+  (if (= x 0) 1 (* x (factorial (- x 1))))))
+(factorial 4)

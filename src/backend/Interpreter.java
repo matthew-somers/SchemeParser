@@ -187,12 +187,33 @@ public class Interpreter
             for (int i = symbolTables.size() - 1; i >= 0; i--)
             {
                 SymbolTable table = symbolTables.get(i);
+                // System.out.printf("Checking for '%s' on level '%d.'\n",
+                // value,
+                // i);
                 if (table.getSymbols().containsKey(value))
                 {
-                    return table.getSymbols().get(value);
+                    /*
+                     * System.out.printf(
+                     * "Symbol '%s' found on level '%d' (%s)\n", value, i,
+                     * table.getSymbols().get(value) instanceof Node ? ((Node)
+                     * table .getSymbols().get(value)) .getValue() :
+                     * "CodeTree");
+                     */
+                    return table.getSymbols().get(value).clone();
                 }
             }
             throw new NoSuchSymbolException(value);
+        }
+        
+        @Override
+        public String toString()
+        {
+            String output = "SymbolTableStack:\n";
+            for (SymbolTable s : symbolTables)
+            {
+                output = String.format("%s\t%s\n", output, s.toString());
+            }
+            return output;
         }
         
         private ArrayList<SymbolTable> symbolTables;
@@ -216,31 +237,86 @@ public class Interpreter
     
     public static enum ReservedWord
     {
-        let("let", null), letStar("let*", null), define("define",
-                        new Applicator()
-                        {
-                            
-                            @Override
-                            public String apply(Interpreter i, Blank node)
+        let("let", new Applicator()
+        {
+            @Override
+            public String apply(Interpreter i, Blank node)
+            {
+                CodeTree definitions = (CodeTree) node.getLeft();
+                SymbolTable s = new SymbolTable();
+                
+                while (definitions != null && definitions.getLeft() != null)
+                {
+                    CodeTree definition = (CodeTree) definitions.getLeft();
+                    String symName = ((Node) definition.getLeft()).getValue();
+                    TreePart symVal = definition.getRight().getLeft();
+                    s.getSymbols().put(symName, symVal);
+                    definitions = definitions.getRight();
+                }
+                
+                i.symbolTableStack.addSymbolTable(s);
+                String output = "";
+                if (node.getRight().getLeft() instanceof CodeTree)
+                {
+                    output = i.interpret((CodeTree) node.getRight().getLeft());
+                }
+                else
+                {
+                    switch (((Node) node.getRight().getLeft()).getType())
+                    {
+                        case Lambda:
+                        break;
+                        case Number:
+                        break;
+                        case ReservedWord:
+                        break;
+                        case Symbol:
+                        break;
+                        case Word:
+                            try
                             {
-                                if (node.getLeft() instanceof CodeTree)
-                                {
-                                    node.setLeft(i.consolidate((CodeTree) node
-                                                    .getLeft()));
-                                }
-                                String symbolName = ((Node) node.getLeft())
+                                String old = ((Node) node.getRight().getLeft())
                                                 .getValue();
-                                TreePart symbolTree = node.getRight().getLeft();
-                                i.getSymbolTableStack().addSymbolAtBase(
-                                                symbolName, symbolTree);
-                                // System.out.printf(
-                                // "Adding '%s' to the symTable:\n",
-                                // symbolName);
-                                // System.out.println(symbolTree.toString(0));
-                                return String.format("[%s]", ((Node) node
-                                                .getLeft()).getValue());
+                                node.getRight()
+                                                .setLeft(i.symbolTableStack
+                                                                .getCodeTreeForSymbol(((Node) node
+                                                                                .getRight()
+                                                                                .getLeft())
+                                                                                .getValue()));
+                                // System.out.printf("'%s' was substituted out.\n",
+                                // old);
+                                // System.out.println("Replaced by:");
+                                node.getLeft().toString(0);
                             }
-                        }), plus("+", new Applicator()
+                            catch (NoSuchSymbolException e)
+                            {
+                            }
+                        break;
+                    }
+                    output = ((Node) node.getRight().getLeft()).getValue();
+                }
+                i.symbolTableStack.removeSymbolTable(s);
+                return output;
+            }
+        }), letStar("let*", null), define("define", new Applicator()
+        {
+            @Override
+            public String apply(Interpreter i, Blank node)
+            {
+                if (node.getLeft() instanceof CodeTree)
+                {
+                    node.setLeft(i.consolidate((CodeTree) node.getLeft()));
+                }
+                String symbolName = ((Node) node.getLeft()).getValue();
+                TreePart symbolTree = node.getRight().getLeft();
+                i.getSymbolTableStack().addSymbolAtBase(symbolName, symbolTree);
+                // System.out.printf(
+                // "Adding '%s' to the symTable:\n",
+                // symbolName);
+                // System.out.println(symbolTree.toString(0));
+                return String.format("[%s]", ((Node) node.getLeft()).getValue());
+            }
+        }), plus("+", new Applicator()
         {
             
             @Override
@@ -337,6 +413,72 @@ public class Interpreter
                 }
                 return String.format("%f", value);
             }
+        }), conditional("if", new Applicator()
+        {
+            @Override
+            public String apply(Interpreter i, Blank node)
+            {
+                TreePart conditional = node.getLeft();
+                TreePart ifTrue = node.getRight().getLeft();
+                TreePart ifFalse = node.getRight().getRight().getLeft();
+                
+                Node conditionalPart;
+                if (conditional instanceof CodeTree)
+                {
+                    conditionalPart = i.consolidate((CodeTree) conditional);
+                }
+                else
+                {
+                    conditionalPart = (Node) conditional;
+                }
+                TreePart value;
+                if (conditionalPart.getValue().equals("#t"))
+                {
+                    value = ifTrue;
+                }
+                else if (conditionalPart.getValue().equals("#f"))
+                {
+                    value = ifFalse;
+                }
+                else
+                {
+                    return String.format("'%s' is not a boolean value.",
+                                    conditionalPart.getValue());
+                }
+                
+                Node returnValue;
+                if (value instanceof CodeTree)
+                {
+                    returnValue = i.consolidate((CodeTree) value);
+                }
+                else
+                {
+                    returnValue = (Node) value;
+                }
+                
+                return returnValue.getValue();
+            }
+        }), equals("=", new Applicator()
+        {
+            @Override
+            public String apply(Interpreter i, Blank node)
+            {
+                // System.out.printf("Equals: %s\n", node.toString(2));
+                TreePart first = node.getLeft();
+                TreePart second = node.getRight().getLeft();
+                Node arg1 = first instanceof CodeTree ? i
+                                .consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i
+                                .consolidate((CodeTree) second) : (Node) second;
+                // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
+                // arg2.getValue());
+                if (Double.parseDouble(arg1.getValue()) == Double
+                                .parseDouble(arg2.getValue()))
+                {
+                    return "#t";
+                }
+                return "#f";
+            }
         });
         private ReservedWord(String word, Applicator applicator)
         {
@@ -387,7 +529,9 @@ public class Interpreter
             if (args.getLeft() != null)
             {
                 String symbolName = ((Node) args.getLeft()).getValue();
-                TreePart symbolValue = node.getLeft();
+                Node symbolValue = node.getLeft() instanceof Node ? (Node) node
+                                .getLeft() : i.consolidate((CodeTree) node
+                                .getLeft());
                 s.getSymbols().put(symbolName, symbolValue);
                 Blank argsRight = args.getRight();
                 // System.out.println("ARGS RIGHT");
@@ -397,7 +541,9 @@ public class Interpreter
                 {
                     // System.out.println("ARGSRIGHT not null");
                     symbolName = ((Node) argsRight.getLeft()).getValue();
-                    symbolValue = node.getLeft();
+                    symbolValue = node.getLeft() instanceof Node ? (Node) node
+                                    .getLeft() : i.consolidate((CodeTree) node
+                                    .getLeft());
                     // System.out.printf("Name: %s\n", symbolName);
                     s.getSymbols().put(symbolName, symbolValue);
                     argsRight = argsRight.getRight();
@@ -405,6 +551,7 @@ public class Interpreter
                 }
             }
             i.symbolTableStack.addSymbolTable(s);
+            // System.out.println(i.symbolTableStack.toString());
             // System.out.println("SymTable added:");
             // System.out.println(s.getSymbols());
             String output = i.interpret(function);

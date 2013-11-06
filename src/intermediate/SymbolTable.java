@@ -44,6 +44,22 @@ public class SymbolTable
         System.out.println("\nSymbol Table: " + symbols.toString());
     }
     
+    @Override
+    public String toString()
+    {
+        String output = "Symbol Table: {";
+        for (String key : symbols.keySet())
+        {
+            output = String.format(
+                            "%s%s=%s ",
+                            output,
+                            key,
+                            symbols.get(key) instanceof Node ? ((Node) symbols
+                                            .get(key)).getValue() : "CodeTree");
+        }
+        return output.concat("}");
+    }
+    
     public void clear()
     {
         symbols.clear();

@@ -80,6 +80,21 @@ public class IntermediateCode
             return s;
         }
         
+        @Override
+        public CodeTree clone()
+        {
+            CodeTree self = new CodeTree();
+            if (getLeft() != null)
+            {
+                self.setLeft(getLeft().clone());
+            }
+            if (getRight() != null)
+            {
+                self.setRight(getRight().clone());
+            }
+            return self;
+        }
+        
         public TreePart getLeft()
         {
             return left;
@@ -109,6 +124,13 @@ public class IntermediateCode
             {
                 this.value = value;
                 this.type = type;
+            }
+            
+            @Override
+            public Node clone()
+            {
+                Node self = new Node(value, type);
+                return self;
             }
             
             public String getValue()
@@ -151,6 +173,21 @@ public class IntermediateCode
                 }
                 return s;
             }
+            
+            @Override
+            public Blank clone()
+            {
+                Blank self = new Blank();
+                if (getLeft() != null)
+                {
+                    self.setLeft(getLeft().clone());
+                }
+                if (getRight() != null)
+                {
+                    self.setRight(getRight().clone());
+                }
+                return self;
+            }
         }
     }
     
@@ -169,5 +206,8 @@ public class IntermediateCode
             }
             return s;
         }
+        
+        @Override
+        public abstract TreePart clone();
     }
 }
