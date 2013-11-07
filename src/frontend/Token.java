@@ -9,7 +9,7 @@ public class Token
                         "[a-zA-Z\\+\\^\\-\\*/#=<>]",
                         "[a-zA-Z0-9\\+\\-\\*\\?]+|#[tf]|[<>]=?"), ReservedWord(
                         "",
-                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member|\\+|\\-|\\*|/|=|<|<=|>|>="), Lambda(
+                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|member|\\+|\\-|\\*|/|=|<|<=|>|>=|car|cdr"), Lambda(
                         "", "");
         private Type(String initChars, String format)
         {
