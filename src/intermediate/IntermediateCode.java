@@ -1,6 +1,8 @@
 package intermediate;
 
+import intermediate.IntermediateCode.CodeTree.Node;
 import java.util.ArrayList;
+import backend.Interpreter;
 import frontend.Token.Type;
 
 public class IntermediateCode
@@ -209,5 +211,14 @@ public class IntermediateCode
         
         @Override
         public abstract TreePart clone();
+        
+        public static Node getNode(TreePart t, Interpreter i)
+        {
+            if (t instanceof Node)
+            {
+                return (Node) t;
+            }
+            return i.consolidate((CodeTree) t);
+        }
     }
 }
