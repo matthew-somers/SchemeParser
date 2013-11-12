@@ -45,11 +45,13 @@ public class Parser
     
     public static CodeTree createCodeTree(Scanner s)
     {
+        // System.out.println("CREATE!");
         CodeTree c = new CodeTree();
         CodeTree currentPart = c;
         while (s.hasNextToken())
         {
             Token t = s.nextToken();
+            // System.out.println(t);
             
             if (t.getType().equals(Token.Type.Symbol)
                             && t.getName().equals("("))
@@ -68,6 +70,32 @@ public class Parser
                             && t.getName().equals(")"))
             {
                 return c;
+            }
+            else if (t.getType().equals(Token.Type.Symbol)
+                            && t.getName().equals("'"))
+            {
+                CodeTree quote = new CodeTree();
+                quote.setLeft(new Node("quote", Token.Type.ReservedWord));
+                quote.setRight(new Blank());
+                t = s.nextToken();
+                if (t.getType() == Token.Type.Symbol && t.getName().equals("("))
+                {
+                    quote.getRight().setLeft(createCodeTree(s));
+                }
+                else
+                {
+                    quote.setRight(new Blank());
+                    quote.getRight()
+                                    .setLeft(new Node(t.getName(), t.getType()));
+                }
+                currentPart.setLeft(quote);
+                if (!s.peekNext().getType().equals(Token.Type.Symbol)
+                                || !s.peekNext().getName().equals(")"))
+                {
+                    Blank b = new Blank();
+                    currentPart.setRight(b);
+                    currentPart = b;
+                }
             }
             else
             {
