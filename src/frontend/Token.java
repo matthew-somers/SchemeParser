@@ -4,12 +4,12 @@ public class Token
 {
     public static enum Type
     {
-        Symbol("[()\\[\\]'{};,.\"\\\\]", ""), Number("[0-9.]",
+        Symbol("[()\\[\\]'{};,.\\\\]", ""), Number("[0-9.]",
                         "([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)"), Word(
-                        "[a-zA-Z\\+\\^\\-\\*/#=<>]",
-                        "[a-zA-Z0-9\\+\\-\\*\\?]+|#[tf]|[<>]=?"), ReservedWord(
+                        "[a-zA-Z\\+\\^\\-\\*\\/#=<>]|\"",
+                        "[a-zA-Z0-9\\+\\-\\*\\?]+|#([tf]|\\\\.?)|[<>]=?|\"(\\w|\\d|\\s|\\-)*\"?"), ReservedWord(
                         "",
-                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|\\+|\\-|\\*|/|=|<|<=|>|>=|car|cdr|equal\\?|cons"), Lambda(
+                        "and|begin|cond|define|else|if|lambda|let|letrec|let\\*|not|or|quote|null\\?|\\+|\\-|\\*|/|=|<|<=|>|>=|c[ad]{1,5}r|equal\\?|cons|symbol\\?|integer\\?|boolean\\?|char\\?|string\\?|real\\?|pair\\?|append|list"), Lambda(
                         "", "");
         private Type(String initChars, String format)
         {

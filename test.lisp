@@ -1,3 +1,23 @@
+(define member? 
+ (lambda (item lst) 
+ (cond 
+ ((null? lst) #f) 
+ ((equal? item (car lst)) #t) 
+ (else (member? item (cdr lst))) 
+))) 
+ 
+(member? 3 '(1 2 3))
+(member? 'b '(a (b c) d))
+(define remove-last 
+ (lambda (item lst) 
+ (cond 
+ ((null? lst) '()) 
+ ((and (equal? item (car lst)) (not (member? item (cdr lst)))) (cdr lst)) 
+ (else (cons (car lst) (remove-last item (cdr lst))))) 
+)) 
+ 
+(remove-last 'a '(b a n a n a s))
+(remove-last '(a b) '(a b (a b) a b (b a) a b (a b) a b)) 
 (define same-structure? 
  (lambda (x y) 
  (cond 
@@ -31,3 +51,17 @@
 (same-structure? '(1 2 3 4 5) '(5 4 3 2))
 (same-structure? '() '())
 (same-structure? '(("hello") "world") '(("good-bye") "sam"))
+ 
+(define sandwich-first 
+ (lambda (a b lst) 
+ (cond 
+ ((null? lst) '()) 
+ ((null? (cdr lst)) lst) 
+ ((and (equal? b (car lst)) (equal? b (cadr lst))) 
+ (append (list b a b) (cddr lst))) 
+ (else (cons (car lst) (sandwich-first a b (cdr lst))))) 
+)) 
+ 
+(sandwich-first 'meat 'bread '(bread bread))
+(sandwich-first 'meat 'bread '())
+(sandwich-first 'meat 'bread '(meat meat))
