@@ -68,17 +68,16 @@ public class IntermediateCode
         {
             String s = spaces(indent);
             s = s.concat("(");
-            if (left != null)
+            if(left != null)
             {
-                s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left
-                                .toString(indent
-                                                + (left instanceof CodeTree ? INDENT
-                                                                : 0))));
+                s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left.toString(indent
+                                + (left instanceof CodeTree ? INDENT : 0))));
             }
-            if (right != null)
+            if(right != null)
             {
                 s = s.concat(right.toString(indent));
             }
+            s = s.concat(")");
             return s;
         }
         
@@ -86,11 +85,11 @@ public class IntermediateCode
         public CodeTree clone()
         {
             CodeTree self = new CodeTree();
-            if (getLeft() != null)
+            if(getLeft() != null)
             {
                 self.setLeft(getLeft().clone());
             }
-            if (getRight() != null)
+            if(getRight() != null)
             {
                 self.setRight(getRight().clone());
             }
@@ -158,20 +157,14 @@ public class IntermediateCode
             public String toString(int indent)
             {
                 String s = " ";
-                if (left != null)
+                if(left != null)
                 {
-                    s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left
-                                    .toString(indent
-                                                    + (left instanceof CodeTree ? INDENT
-                                                                    : 0))));
+                    s = s.concat((left instanceof CodeTree ? "\n" : "").concat(left.toString(indent
+                                    + (left instanceof CodeTree ? INDENT : 0))));
                 }
-                if (right != null)
+                if(right != null)
                 {
                     s = s.concat(right.toString(indent));
-                }
-                else
-                {
-                    s = s.concat(")");
                 }
                 return s;
             }
@@ -180,11 +173,11 @@ public class IntermediateCode
             public Blank clone()
             {
                 Blank self = new Blank();
-                if (getLeft() != null)
+                if(getLeft() != null)
                 {
                     self.setLeft(getLeft().clone());
                 }
-                if (getRight() != null)
+                if(getRight() != null)
                 {
                     self.setRight(getRight().clone());
                 }
@@ -214,7 +207,7 @@ public class IntermediateCode
         
         public static Node getNode(TreePart t, Interpreter i)
         {
-            if (t instanceof Node)
+            if(t instanceof Node)
             {
                 return (Node) t;
             }

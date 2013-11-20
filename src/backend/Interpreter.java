@@ -28,7 +28,7 @@ public class Interpreter
         TreePart output = new Node("ERROR", Type.Word);
         // // System.out.println("Interpreting the following:");
         // // System.out.println(tree.toString(0));
-        if (tree.getLeft() instanceof CodeTree)
+        if(tree.getLeft() instanceof CodeTree)
         {
             tree.setLeft(consolidate((CodeTree) tree.getLeft()));
         }
@@ -36,13 +36,11 @@ public class Interpreter
         switch (car.getType())
         {
             case Number:
-                System.out.printf("Attempt to apply non-procedure '%s'.\n",
-                                car.getValue());
+                System.out.printf("Attempt to apply non-procedure '%s'.\n", car.getValue());
                 try
                 {
                     throw new Exception();
-                }
-                catch (Exception e1)
+                } catch (Exception e1)
                 {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -50,19 +48,15 @@ public class Interpreter
             break;
             case ReservedWord:
                 // // System.out.println("ReservedWord!");
-                output = ReservedWord.getWord(car.getValue()).applyTo(this,
-                                resolve(tree.getRight()));
+                output = ReservedWord.getWord(car.getValue()).applyTo(this, resolve(tree.getRight()));
             break;
             case Symbol:
-                if (car.getValue().equals("'"))
+                if(car.getValue().equals("'"))
                 {
-                    output = ReservedWord.getWord("quote").applyTo(this,
-                                    resolve(tree.getRight()));
-                }
-                else
+                    output = ReservedWord.getWord("quote").applyTo(this, resolve(tree.getRight()));
+                } else
                 {
-                    System.out.printf("Attempt to apply non-procedure '%s'.\n",
-                                    car.getValue());
+                    System.out.printf("Attempt to apply non-procedure '%s'.\n", car.getValue());
                 }
             break;
             case Word:
@@ -70,10 +64,8 @@ public class Interpreter
                 TreePart wordTree = null;
                 try
                 {
-                    wordTree = symbolTableStack.getCodeTreeForSymbol(car
-                                    .getValue());
-                }
-                catch (NoSuchSymbolException e)
+                    wordTree = symbolTableStack.getCodeTreeForSymbol(car.getValue());
+                } catch (NoSuchSymbolException e)
                 {
                     return new Node(e.getMessage(), Type.Word);
                 }
@@ -96,17 +88,15 @@ public class Interpreter
     {
         // // System.out.println("Consolidate!");
         // // System.out.println(tree.toString(0));
-        if (tree.getLeft() instanceof CodeTree)
+        if(tree.getLeft() instanceof CodeTree)
         {
             tree.setLeft(consolidate((CodeTree) tree.getLeft()));
         }
         Node left = (Node) tree.getLeft();
-        if (left.getValue().equals("lambda"))
+        if(left.getValue().equals("lambda"))
         {
-            return new Lambda((CodeTree) tree.getRight().getLeft(),
-                            (CodeTree) tree.getRight().getRight().getLeft());
-        }
-        else
+            return new Lambda((CodeTree) tree.getRight().getLeft(), (CodeTree) tree.getRight().getRight().getLeft());
+        } else
         {
             TreePart content = interpret(tree);
             return TreePart.getNode(content, this);
@@ -123,7 +113,7 @@ public class Interpreter
     {
         // // System.out.println("Resolving!");
         // // System.out.println(node.toString(0));
-        if (node.getLeft() instanceof Node)
+        if(node.getLeft() instanceof Node)
         {
             switch (((Node) node.getLeft()).getType())
             {
@@ -139,21 +129,18 @@ public class Interpreter
                     try
                     {
                         String old = ((Node) node.getLeft()).getValue();
-                        node.setLeft(this.symbolTableStack
-                                        .getCodeTreeForSymbol(((Node) node
-                                                        .getLeft()).getValue()));
+                        node.setLeft(this.symbolTableStack.getCodeTreeForSymbol(((Node) node.getLeft()).getValue()));
                         // // System.out.printf("'%s' was substituted out.\n",
                         // old);
                         // // System.out.println("Replaced by:");
                         // // System.out.println(node.getLeft().toString(0));
-                    }
-                    catch (NoSuchSymbolException e)
+                    } catch (NoSuchSymbolException e)
                     {
                     }
                 break;
             }
         }
-        if (node.getRight() != null)
+        if(node.getRight() != null)
         {
             node.setRight(resolve(node.getRight()));
         }
@@ -190,8 +177,7 @@ public class Interpreter
             symbolTables.remove(s);
         }
         
-        public TreePart getCodeTreeForSymbol(String value)
-                        throws NoSuchSymbolException
+        public TreePart getCodeTreeForSymbol(String value) throws NoSuchSymbolException
         {
             for (int i = symbolTables.size() - 1; i >= 0; i--)
             {
@@ -199,7 +185,7 @@ public class Interpreter
                 // // System.out.printf("Checking for '%s' on level '%d.'\n",
                 // value,
                 // i);
-                if (table.getSymbols().containsKey(value))
+                if(table.getSymbols().containsKey(value))
                 {
                     /*
                      * // System.out.printf(
@@ -209,12 +195,11 @@ public class Interpreter
                      * "CodeTree");
                      */
                     TreePart clone = table.getSymbols().get(value).clone();
-                    if (clone instanceof CodeTree)
+                    if(clone instanceof CodeTree)
                     {
-                        if (((CodeTree) clone).getLeft() instanceof Node)
+                        if(((CodeTree) clone).getLeft() instanceof Node)
                         {
-                            if (((Node) ((CodeTree) clone).getLeft())
-                                            .getValue().equals("lambda"))
+                            if(((Node) ((CodeTree) clone).getLeft()).getValue().equals("lambda"))
                             {
                                 lastLambdaLookup = value;
                             }
@@ -266,8 +251,7 @@ public class Interpreter
     
     public static enum ReservedWord
     {
-        let("let", new Applicator()
-        {
+        let("let", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -285,11 +269,10 @@ public class Interpreter
                 
                 i.symbolTableStack.addSymbolTable(s);
                 TreePart output;
-                if (node.getRight().getLeft() instanceof CodeTree)
+                if(node.getRight().getLeft() instanceof CodeTree)
                 {
                     output = i.interpret((CodeTree) node.getRight().getLeft());
-                }
-                else
+                } else
                 {
                     switch (((Node) node.getRight().getLeft()).getType())
                     {
@@ -304,21 +287,16 @@ public class Interpreter
                         case Word:
                             try
                             {
-                                String old = ((Node) node.getRight().getLeft())
-                                                .getValue();
-                                node.getRight()
-                                                .setLeft(i.symbolTableStack
-                                                                .getCodeTreeForSymbol(((Node) node
-                                                                                .getRight()
-                                                                                .getLeft())
-                                                                                .getValue()));
+                                String old = ((Node) node.getRight().getLeft()).getValue();
+                                node.getRight().setLeft(
+                                                i.symbolTableStack.getCodeTreeForSymbol(((Node) node.getRight()
+                                                                .getLeft()).getValue()));
                                 // //
                                 // System.out.printf("'%s' was substituted out.\n",
                                 // old);
                                 // // System.out.println("Replaced by:");
                                 node.getLeft().toString(0);
-                            }
-                            catch (NoSuchSymbolException e)
+                            } catch (NoSuchSymbolException e)
                             {
                             }
                         break;
@@ -328,8 +306,7 @@ public class Interpreter
                 i.symbolTableStack.removeSymbolTable(s);
                 return output;
             }
-        }), letStar("let*", new Applicator()
-        {
+        }), letStar("let*", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -347,13 +324,12 @@ public class Interpreter
                 
                 i.symbolTableStack.addSymbolTable(s);
                 TreePart output;
-                if (node.getRight().getLeft() instanceof CodeTree)
+                if(node.getRight().getLeft() instanceof CodeTree)
                 {
-                    System.out.println("letStar: codetree");
+                    // System.out.println("letStar: codetree");
                     output = i.interpret((CodeTree) node.getRight().getLeft());
-                    System.out.println("end");
-                }
-                else
+                    // System.out.println("end");
+                } else
                 {
                     switch (((Node) node.getRight().getLeft()).getType())
                     {
@@ -371,19 +347,15 @@ public class Interpreter
                                 // String old = ((Node)
                                 // node.getRight().getLeft())
                                 // .getValue();
-                                node.getRight()
-                                                .setLeft(i.symbolTableStack
-                                                                .getCodeTreeForSymbol(((Node) node
-                                                                                .getRight()
-                                                                                .getLeft())
-                                                                                .getValue()));
+                                node.getRight().setLeft(
+                                                i.symbolTableStack.getCodeTreeForSymbol(((Node) node.getRight()
+                                                                .getLeft()).getValue()));
                                 // //
                                 // System.out.printf("'%s' was substituted out.\n",
                                 // old);
                                 // // System.out.println("Replaced by:");
                                 // node.getLeft().toString(0);
-                            }
-                            catch (NoSuchSymbolException e)
+                            } catch (NoSuchSymbolException e)
                             {
                             }
                         break;
@@ -393,8 +365,7 @@ public class Interpreter
                 i.symbolTableStack.removeSymbolTable(s);
                 return output;
             }
-        }), letRec("letrec", new Applicator()
-        {
+        }), letRec("letrec", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -412,11 +383,10 @@ public class Interpreter
                 
                 i.symbolTableStack.addSymbolTable(s);
                 TreePart output;
-                if (node.getRight().getLeft() instanceof CodeTree)
+                if(node.getRight().getLeft() instanceof CodeTree)
                 {
                     output = i.interpret((CodeTree) node.getRight().getLeft());
-                }
-                else
+                } else
                 {
                     switch (((Node) node.getRight().getLeft()).getType())
                     {
@@ -431,21 +401,16 @@ public class Interpreter
                         case Word:
                             try
                             {
-                                String old = ((Node) node.getRight().getLeft())
-                                                .getValue();
-                                node.getRight()
-                                                .setLeft(i.symbolTableStack
-                                                                .getCodeTreeForSymbol(((Node) node
-                                                                                .getRight()
-                                                                                .getLeft())
-                                                                                .getValue()));
+                                String old = ((Node) node.getRight().getLeft()).getValue();
+                                node.getRight().setLeft(
+                                                i.symbolTableStack.getCodeTreeForSymbol(((Node) node.getRight()
+                                                                .getLeft()).getValue()));
                                 // //
                                 // System.out.printf("'%s' was substituted out.\n",
                                 // old);
                                 // // System.out.println("Replaced by:");
                                 node.getLeft().toString(0);
-                            }
-                            catch (NoSuchSymbolException e)
+                            } catch (NoSuchSymbolException e)
                             {
                             }
                         break;
@@ -455,26 +420,22 @@ public class Interpreter
                 i.symbolTableStack.removeSymbolTable(s);
                 return output;
             }
-        }), define("define", new Applicator()
-        {
+        }), define("define", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                if (node.getLeft() instanceof CodeTree)
+                if(node.getLeft() instanceof CodeTree)
                 {
                     node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                 }
                 String symbolName = ((Node) node.getLeft()).getValue();
                 TreePart symbolTree = node.getRight().getLeft();
-                if (symbolTree instanceof CodeTree)
+                if(symbolTree instanceof CodeTree)
                 {
-                    if (((CodeTree) symbolTree).getLeft() instanceof Node)
+                    if(((CodeTree) symbolTree).getLeft() instanceof Node)
                     {
-                        if (!((Node) ((CodeTree) symbolTree).getLeft())
-                                        .getValue().equals("lambda")
-                                        && !((Node) ((CodeTree) symbolTree)
-                                                        .getLeft()).getValue()
-                                                        .equals("quote"))
+                        if(!((Node) ((CodeTree) symbolTree).getLeft()).getValue().equals("lambda")
+                                        && !((Node) ((CodeTree) symbolTree).getLeft()).getValue().equals("quote"))
                         {
                             symbolTree = i.interpret((CodeTree) symbolTree);
                         }
@@ -485,108 +446,93 @@ public class Interpreter
                 // "Adding '%s' to the symTable:\n",
                 // symbolName);
                 // // System.out.println(symbolTree.toString(0));
-                return new Node(String.format("[%s]",
-                                ((Node) node.getLeft()).getValue()), Type.Word);
+                return new Node(String.format("[%s]", ((Node) node.getLeft()).getValue()), Type.Word);
             }
-        }), plus("+", new Applicator()
-        {
-            
+        }), plus("+", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                if (node.getLeft() instanceof CodeTree)
+                if(node.getLeft() instanceof CodeTree)
                 {
                     node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                 }
-                double value = Double.parseDouble(((Node) node.getLeft())
-                                .getValue());
+                double value = Double.parseDouble(((Node) node.getLeft()).getValue());
                 // // System.out.println("Value: " + value);
                 while (node.getRight() != null)
                 {
                     node = node.getRight();
-                    if (node.getLeft() instanceof CodeTree)
+                    if(node.getLeft() instanceof CodeTree)
                     {
                         node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                     }
-                    value += Double.parseDouble(((Node) node.getLeft())
-                                    .getValue());
+                    value += Double.parseDouble(((Node) node.getLeft()).getValue());
                 }
                 return new Node(String.format("%f", value), Type.Number);
             }
-        }), minus("-", new Applicator()
-        {
+        }), minus("-", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                if (node.getLeft() instanceof CodeTree)
+                if(node.getLeft() instanceof CodeTree)
                 {
                     node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                 }
-                double value = Double.parseDouble(((Node) node.getLeft())
-                                .getValue());
+                double value = Double.parseDouble(((Node) node.getLeft()).getValue());
                 // // System.out.println("Value: " - value);
                 while (node.getRight() != null)
                 {
                     node = node.getRight();
-                    if (node.getLeft() instanceof CodeTree)
+                    if(node.getLeft() instanceof CodeTree)
                     {
                         node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                     }
-                    value -= Double.parseDouble(((Node) node.getLeft())
-                                    .getValue());
+                    value -= Double.parseDouble(((Node) node.getLeft()).getValue());
                 }
                 return new Node(String.format("%f", value), Type.Number);
             }
-        }), times("*", new Applicator()
-        {
+        }), times("*", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                if (node.getLeft() instanceof CodeTree)
+                if(node.getLeft() instanceof CodeTree)
                 {
                     node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                 }
-                double value = Double.parseDouble(((Node) node.getLeft())
-                                .getValue());
+                double value = Double.parseDouble(((Node) node.getLeft()).getValue());
                 // // System.out.println("Value: " - value);
                 while (node.getRight() != null)
                 {
                     node = node.getRight();
-                    if (node.getLeft() instanceof CodeTree)
+                    if(node.getLeft() instanceof CodeTree)
                     {
                         node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                     }
-                    value *= Double.parseDouble(((Node) node.getLeft())
-                                    .getValue());
+                    value *= Double.parseDouble(((Node) node.getLeft()).getValue());
                 }
                 return new Node(String.format("%f", value), Type.Number);
             }
-        }), divide("/", new Applicator()
-        {
+        }), divide("/", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                if (node.getLeft() instanceof CodeTree)
+                if(node.getLeft() instanceof CodeTree)
                 {
                     node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                 }
-                double value = Double.parseDouble(((Node) node.getLeft())
-                                .getValue());
+                double value = Double.parseDouble(((Node) node.getLeft()).getValue());
                 // // System.out.println("Value: " / value);
                 while (node.getRight() != null)
                 {
                     node = node.getRight();
-                    if (node.getLeft() instanceof CodeTree)
+                    if(node.getLeft() instanceof CodeTree)
                     {
                         node.setLeft(i.consolidate((CodeTree) node.getLeft()));
                     }
-                    value /= Double.parseDouble(((Node) node.getLeft())
-                                    .getValue());
+                    value /= Double.parseDouble(((Node) node.getLeft()).getValue());
                 }
                 return new Node(String.format("%f", value), Type.Number);
             }
-        }), conditional("if", new Applicator()
-        {
+        }), conditional("if", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -595,169 +541,140 @@ public class Interpreter
                 TreePart ifFalse = node.getRight().getRight().getLeft();
                 
                 Node conditionalPart;
-                if (conditional instanceof CodeTree)
+                if(conditional instanceof CodeTree)
                 {
                     conditionalPart = i.consolidate((CodeTree) conditional);
-                }
-                else
+                } else
                 {
                     conditionalPart = (Node) conditional;
                 }
                 TreePart value;
-                if (conditionalPart.getValue().equals("#t"))
+                if(conditionalPart.getValue().equals("#t"))
                 {
                     value = ifTrue;
-                }
-                else if (conditionalPart.getValue().equals("#f"))
+                } else if(conditionalPart.getValue().equals("#f"))
                 {
                     value = ifFalse;
-                }
-                else
+                } else
                 {
-                    return new Node(String.format(
-                                    "'%s' is not a boolean value.",
-                                    conditionalPart.getValue()), Type.Word);
+                    return new Node(String.format("'%s' is not a boolean value.", conditionalPart.getValue()),
+                                    Type.Word);
                 }
                 
-                Node returnValue;
-                if (value instanceof CodeTree)
+                TreePart returnValue;
+                if(value instanceof CodeTree)
                 {
-                    returnValue = i.consolidate((CodeTree) value);
-                }
-                else
+                    returnValue = i.interpret((CodeTree) value);
+                } else
                 {
                     returnValue = (Node) value;
                 }
                 
-                return new Node(returnValue.getValue(), Type.Word);
+                return returnValue;
             }
-        }), equals("=", new Applicator()
-        {
+        }), equals("=", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.printf("Equals: %s\n", node.toString(2));
                 TreePart first = node.getLeft();
                 TreePart second = node.getRight().getLeft();
-                Node arg1 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) first) : (Node) first;
-                Node arg2 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) second) : (Node) second;
+                Node arg1 = first instanceof CodeTree ? i.consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i.consolidate((CodeTree) second) : (Node) second;
                 // // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
                 // arg2.getValue());
-                if (Double.parseDouble(arg1.getValue()) == Double
-                                .parseDouble(arg2.getValue()))
+                if(Double.parseDouble(arg1.getValue()) == Double.parseDouble(arg2.getValue()))
                 {
                     return new Node("#t", Type.Symbol);
                 }
                 return new Node("#f", Type.Symbol);
             }
-        }), lessthan("<", new Applicator()
-        {
+        }), lessthan("<", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.printf("Equals: %s\n", node.toString(2));
                 TreePart first = node.getLeft();
                 TreePart second = node.getRight().getLeft();
-                Node arg1 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) first) : (Node) first;
-                Node arg2 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) second) : (Node) second;
+                Node arg1 = first instanceof CodeTree ? i.consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i.consolidate((CodeTree) second) : (Node) second;
                 // // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
                 // arg2.getValue());
-                if (Double.parseDouble(arg1.getValue()) < Double
-                                .parseDouble(arg2.getValue()))
+                if(Double.parseDouble(arg1.getValue()) < Double.parseDouble(arg2.getValue()))
                 {
                     return new Node("#t", Type.Symbol);
                 }
                 return new Node("#f", Type.Symbol);
             }
-        }), lessthanequalto("<=", new Applicator()
-        {
+        }), lessthanequalto("<=", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.printf("Equals: %s\n", node.toString(2));
                 TreePart first = node.getLeft();
                 TreePart second = node.getRight().getLeft();
-                Node arg1 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) first) : (Node) first;
-                Node arg2 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) second) : (Node) second;
+                Node arg1 = first instanceof CodeTree ? i.consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i.consolidate((CodeTree) second) : (Node) second;
                 // // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
                 // arg2.getValue());
-                if (Double.parseDouble(arg1.getValue()) <= Double
-                                .parseDouble(arg2.getValue()))
+                if(Double.parseDouble(arg1.getValue()) <= Double.parseDouble(arg2.getValue()))
                 {
                     return new Node("#t", Type.Symbol);
                 }
                 return new Node("#f", Type.Symbol);
             }
-        }), greaterthan(">", new Applicator()
-        {
+        }), greaterthan(">", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.printf("Equals: %s\n", node.toString(2));
                 TreePart first = node.getLeft();
                 TreePart second = node.getRight().getLeft();
-                Node arg1 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) first) : (Node) first;
-                Node arg2 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) second) : (Node) second;
+                Node arg1 = first instanceof CodeTree ? i.consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i.consolidate((CodeTree) second) : (Node) second;
                 // // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
                 // arg2.getValue());
-                if (Double.parseDouble(arg1.getValue()) > Double
-                                .parseDouble(arg2.getValue()))
+                if(Double.parseDouble(arg1.getValue()) > Double.parseDouble(arg2.getValue()))
                 {
                     return new Node("#t", Type.Symbol);
                 }
                 return new Node("#f", Type.Symbol);
             }
-        }), greaterthanequalto(">=", new Applicator()
-        {
+        }), greaterthanequalto(">=", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.printf("Equals: %s\n", node.toString(2));
                 TreePart first = node.getLeft();
                 TreePart second = node.getRight().getLeft();
-                Node arg1 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) first) : (Node) first;
-                Node arg2 = first instanceof CodeTree ? i
-                                .consolidate((CodeTree) second) : (Node) second;
+                Node arg1 = first instanceof CodeTree ? i.consolidate((CodeTree) first) : (Node) first;
+                Node arg2 = first instanceof CodeTree ? i.consolidate((CodeTree) second) : (Node) second;
                 // // System.out.printf("(= '%s' '%s')\n", arg1.getValue(),
                 // arg2.getValue());
-                if (Double.parseDouble(arg1.getValue()) >= Double
-                                .parseDouble(arg2.getValue()))
+                if(Double.parseDouble(arg1.getValue()) >= Double.parseDouble(arg2.getValue()))
                 {
                     return new Node("#t", Type.Symbol);
                 }
                 return new Node("#f", Type.Symbol);
             }
-        }), car("car", new Applicator()
-        {
+        }), car("car", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 TreePart output = i.interpret((CodeTree) (node.getLeft()));
                 return ((CodeTree) output).getLeft();
             }
-        }), cdr("cdr", new Applicator()
-        {
+        }), cdr("cdr", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
-                node = ((CodeTree) (i.interpret((CodeTree) node.getLeft())))
-                                .getRight();
+                node = ((CodeTree) (i.interpret((CodeTree) node.getLeft()))).getRight();
                 CodeTree cdr = new CodeTree();
                 cdr.setLeft(node != null ? node.getLeft() : null);
                 cdr.setRight(node != null ? node.getRight() : null);
                 return cdr;
             }
-        }), caar("caar", new Applicator()
-        {
+        }), caar("caar", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -769,12 +686,10 @@ public class Interpreter
                 Blank subHolder = new Blank();
                 subHolder.setLeft(car1);
                 top.setRight(subHolder);
-                TreePart car2 = ReservedWord.car.getApplicator().apply(i,
-                                holder);
+                TreePart car2 = ReservedWord.car.getApplicator().apply(i, holder);
                 return car2;
             }
-        }), cddr("cddr", new Applicator()
-        {
+        }), cddr("cddr", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -786,12 +701,10 @@ public class Interpreter
                 Blank subHolder = new Blank();
                 subHolder.setLeft(car1);
                 top.setRight(subHolder);
-                TreePart car2 = ReservedWord.cdr.getApplicator().apply(i,
-                                holder);
+                TreePart car2 = ReservedWord.cdr.getApplicator().apply(i, holder);
                 return car2;
             }
-        }), cadr("cadr", new Applicator()
-        {
+        }), cadr("cadr", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -803,12 +716,10 @@ public class Interpreter
                 Blank subHolder = new Blank();
                 subHolder.setLeft(car1);
                 top.setRight(subHolder);
-                TreePart car2 = ReservedWord.car.getApplicator().apply(i,
-                                holder);
+                TreePart car2 = ReservedWord.car.getApplicator().apply(i, holder);
                 return car2;
             }
-        }), cdar("cdar", new Applicator()
-        {
+        }), cdar("cdar", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -820,49 +731,44 @@ public class Interpreter
                 Blank subHolder = new Blank();
                 subHolder.setLeft(car1);
                 top.setRight(subHolder);
-                TreePart car2 = ReservedWord.cdr.getApplicator().apply(i,
-                                holder);
+                TreePart car2 = ReservedWord.cdr.getApplicator().apply(i, holder);
                 return car2;
             }
-        }), quote("quote", new Applicator()
-        {
+        }), quote("quote", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 return node.getLeft();
             }
-        }), isNull("null?", new Applicator()
-        {
+        }), isNull("null?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Null?");
                 TreePart arg = node.getLeft();
-                if (arg instanceof Node)
+                if(arg instanceof Node)
                 {
                     return new Node("#f", Type.Word);
                 }
                 try
                 {
                     arg = i.interpret((CodeTree) arg);
-                }
-                catch (NullPointerException e)
+                } catch (NullPointerException e)
                 {
                     return new Node("#t", Type.Word);
                 }
-                if (arg instanceof Node)
+                if(arg instanceof Node)
                 {
                     return new Node("#f", Type.Word);
                 }
                 CodeTree tree = (CodeTree) arg;
-                if (tree.getLeft() == null)
+                if(tree.getLeft() == null)
                 {
                     return new Node("#t", Type.Word);
                 }
                 return new Node("#f", Type.Word);
             }
-        }), cond("cond", new Applicator()
-        {
+        }), cond("cond", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -870,28 +776,23 @@ public class Interpreter
                 {
                     CodeTree currentElement = (CodeTree) node.getLeft();
                     Node left = TreePart.getNode(currentElement.getLeft(), i);
-                    if (left.getValue().equals("#t")
-                                    || left.getValue().equals("else"))
+                    if(left.getValue().equals("#t") || left.getValue().equals("else"))
                     {
-                        TreePart returnTree = currentElement.getRight()
-                                        .getLeft();
-                        if (returnTree instanceof CodeTree)
+                        TreePart returnTree = currentElement.getRight().getLeft();
+                        if(returnTree instanceof CodeTree)
                         {
                             returnTree = i.interpret((CodeTree) returnTree);
                         }
-                        if (returnTree instanceof Node)
+                        if(returnTree instanceof Node)
                         {
                             Node rT = (Node) returnTree;
-                            if (rT.getType() == Type.Word)
+                            if(rT.getType() == Type.Word)
                             {
                                 try
                                 {
-                                    returnTree = i.interpret((CodeTree) i
-                                                    .getSymbolTableStack()
-                                                    .getCodeTreeForSymbol(
-                                                                    rT.getValue()));
-                                }
-                                catch (NoSuchSymbolException e)
+                                    returnTree = i.interpret((CodeTree) i.getSymbolTableStack().getCodeTreeForSymbol(
+                                                    rT.getValue()));
+                                } catch (NoSuchSymbolException e)
                                 {
                                     // System.out.println("Probable error at line 880");
                                     // e.printStackTrace();
@@ -904,37 +805,34 @@ public class Interpreter
                 }
                 return null;
             }
-        }), areEqual("equal?", new Applicator()
-        {
+        }), areEqual("equal?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 TreePart arg1 = node.getLeft();
                 TreePart arg2 = node.getRight().getLeft();
-                if (arg1 instanceof CodeTree)
+                if(arg1 instanceof CodeTree)
                 {
                     arg1 = i.interpret((CodeTree) arg1);
                 }
-                if (arg2 instanceof CodeTree)
+                if(arg2 instanceof CodeTree)
                 {
                     arg2 = i.interpret((CodeTree) arg2);
                 }
-                if (arg1 instanceof Node)
+                if(arg1 instanceof Node)
                 {
-                    if (arg2 instanceof Node)
+                    if(arg2 instanceof Node)
                     {
-                        if (((Node) arg1).getValue().equals(
-                                        ((Node) arg2).getValue()))
+                        if(((Node) arg1).getValue().equals(((Node) arg2).getValue()))
                         {
                             return new Node("#t", Type.Word);
                         }
                     }
-                }
-                else if (arg1 instanceof CodeTree)
+                } else if(arg1 instanceof CodeTree)
                 {
-                    if (arg2 instanceof CodeTree)
+                    if(arg2 instanceof CodeTree)
                     {
-                        if (compareTrees((CodeTree) arg1, (CodeTree) arg2))
+                        if(compareTrees((CodeTree) arg1, (CodeTree) arg2))
                         {
                             return new Node("#t", Type.Word);
                         }
@@ -947,28 +845,27 @@ public class Interpreter
             {
                 TreePart left1 = arg1.getLeft();
                 TreePart left2 = arg2.getLeft();
-                if (left1 instanceof Node)
+                if(left1 instanceof Node)
                 {
-                    if (left2 instanceof Node)
+                    if(left2 instanceof Node)
                     {
-                        if (((Node) left1).getValue().equals(
-                                        ((Node) left2).getValue()))
+                        if(((Node) left1).getValue().equals(((Node) left2).getValue()))
                         {
                             return true;
                         }
                     }
                 }
-                if (left1 instanceof CodeTree)
+                if(left1 instanceof CodeTree)
                 {
-                    if (left2 instanceof CodeTree)
+                    if(left2 instanceof CodeTree)
                     {
-                        if (compareTrees((CodeTree) left1, (CodeTree) left2))
+                        if(compareTrees((CodeTree) left1, (CodeTree) left2))
                         {
                             Blank right1 = arg1.getRight();
                             Blank right2 = arg2.getRight();
-                            if (right1 != null)
+                            if(right1 != null)
                             {
-                                if (right2 != null)
+                                if(right2 != null)
                                 {
                                     CodeTree r1 = new CodeTree();
                                     r1.setLeft(right1.getLeft());
@@ -978,10 +875,9 @@ public class Interpreter
                                     r2.setRight(right2.getRight());
                                     return compareTrees(r1, r2);
                                 }
-                            }
-                            else
+                            } else
                             {
-                                if (right2 == null)
+                                if(right2 == null)
                                 {
                                     return true;
                                 }
@@ -991,8 +887,7 @@ public class Interpreter
                 }
                 return false;
             }
-        }), and("and", new Applicator()
-        {
+        }), and("and", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -1009,9 +904,8 @@ public class Interpreter
                      * System.out.println(i.interpret((CodeTree) current)
                      * .toString(0)); }
                      */
-                    Node currentNode = (Node) (current instanceof Node ? current
-                                    : i.interpret((CodeTree) current));
-                    if (!currentNode.getValue().equals("#t"))
+                    Node currentNode = (Node) (current instanceof Node ? current : i.interpret((CodeTree) current));
+                    if(!currentNode.getValue().equals("#t"))
                     {
                         return new Node("#f", Type.Word);
                     }
@@ -1019,8 +913,7 @@ public class Interpreter
                 }
                 return new Node("#t", Type.Word);
             }
-        }), cons("cons", new Applicator()
-        {
+        }), cons("cons", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -1029,11 +922,11 @@ public class Interpreter
                 TreePart arg2 = node.getRight().getLeft();
                 // // System.out.println(arg1.toString(0));
                 // // System.out.println(arg2.toString(0));
-                if (arg1 instanceof CodeTree)
+                if(arg1 instanceof CodeTree)
                 {
                     arg1 = i.interpret((CodeTree) arg1);
                 }
-                if (arg2 instanceof CodeTree)
+                if(arg2 instanceof CodeTree)
                 {
                     arg2 = i.interpret((CodeTree) arg2);
                 }
@@ -1046,8 +939,7 @@ public class Interpreter
                 tree.getRight().setRight(((CodeTree) arg2).getRight());
                 return tree;
             }
-        }), append("append", new Applicator()
-        {
+        }), append("append", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -1055,83 +947,77 @@ public class Interpreter
                 // // System.out.println(node.toString(0));
                 TreePart arg1 = node.getLeft();
                 TreePart arg2 = node.getRight().getLeft();
-                if (arg1 instanceof CodeTree)
+                if(arg1 instanceof CodeTree)
                 {
                     arg1 = i.interpret((CodeTree) arg1);
                 }
-                if (arg2 instanceof CodeTree)
+                if(arg2 instanceof CodeTree)
                 {
                     arg2 = i.interpret((CodeTree) arg2);
                 }
                 CodeTree tree = new CodeTree();
                 CodeTree first = (CodeTree) arg1;
                 CodeTree second = (CodeTree) arg2;
-                if (first.getLeft() != null)
+                if(first.getLeft() != null)
                 {
                     tree.setLeft(first.getLeft());
                     tree.setRight(first.getRight());
                     Blank b = tree.getRight();
-                    if (b == null)
+                    if(b == null)
                     {
-                        if (second.getLeft() != null)
+                        if(second.getLeft() != null)
                         {
                             tree.setRight(new Blank());
                             tree.getRight().setLeft(second.getLeft());
                             tree.getRight().setRight(second.getRight());
                         }
-                    }
-                    else
+                    } else
                     {
                         while (b.getRight() != null)
                         {
                             b = b.getRight();
                         }
-                        if (second.getLeft() != null)
+                        if(second.getLeft() != null)
                         {
                             b.setRight(new Blank());
                             b.getRight().setLeft(second.getLeft());
                             b.getRight().setRight(second.getRight());
                         }
                     }
-                }
-                else if (second.getLeft() != null)
+                } else if(second.getLeft() != null)
                 {
                     tree.setLeft(second.getLeft());
                     tree.setRight(second.getRight());
                 }
                 return tree;
             }
-        }), list("list", new Applicator()
-        {
+        }), list("list", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 CodeTree tree = new CodeTree();
-                if (node != null)
+                if(node != null)
                 {
-                    if (node.getLeft() != null)
+                    if(node.getLeft() != null)
                     {
-                        tree.setLeft(node.getLeft() instanceof CodeTree ? i
-                                        .interpret((CodeTree) node.getLeft())
-                                        : node.getLeft());
+                        tree.setLeft(node.getLeft() instanceof CodeTree ? i.interpret((CodeTree) node.getLeft()) : node
+                                        .getLeft());
                     }
                     node = node.getRight();
                     Blank b = new Blank();
-                    if (node != null)
+                    if(node != null)
                     {
                         tree.setRight(b);
                     }
                     while (node != null)
                     {
-                        if (node.getLeft() != null)
+                        if(node.getLeft() != null)
                         {
-                            b.setLeft(node.getLeft() instanceof CodeTree ? i
-                                            .interpret((CodeTree) node
-                                                            .getLeft()) : node
-                                            .getLeft());
+                            b.setLeft(node.getLeft() instanceof CodeTree ? i.interpret((CodeTree) node.getLeft())
+                                            : node.getLeft());
                         }
                         node = node.getRight();
-                        if (node != null)
+                        if(node != null)
                         {
                             b.setRight(new Blank());
                             b = b.getRight();
@@ -1140,27 +1026,25 @@ public class Interpreter
                 }
                 return tree;
             }
-        }), not("not", new Applicator()
-        {
+        }), not("not", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 TreePart arg1 = node.getLeft();
-                if (arg1 instanceof CodeTree)
+                if(arg1 instanceof CodeTree)
                 {
                     arg1 = i.interpret((CodeTree) arg1);
                 }
-                if (arg1 instanceof Node)
+                if(arg1 instanceof Node)
                 {
-                    if (((Node) arg1).getValue().equals("#f"))
+                    if(((Node) arg1).getValue().equals("#f"))
                     {
                         return new Node("#t", Type.Word);
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), or("or", new Applicator()
-        {
+        }), or("or", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
@@ -1168,7 +1052,7 @@ public class Interpreter
                 {
                     TreePart current = node.getLeft();
                     Node currentNode = TreePart.getNode(current, i);
-                    if (currentNode.getValue().equals("#t"))
+                    if(currentNode.getValue().equals("#t"))
                     {
                         return new Node("#t", Type.Word);
                     }
@@ -1176,149 +1060,140 @@ public class Interpreter
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isSymbol("symbol?", new Applicator()
-        {
+        }), isSymbol("symbol?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Symbol?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
-                    if (((Node) left).getValue().matches("[a-zA-Z0-9]+"))
+                    if(((Node) left).getValue().matches("[a-zA-Z0-9]+"))
                     {
                         return new Node("#t", Type.Word);
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isInteger("integer?", new Applicator()
-        {
+        }), isInteger("integer?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Integer?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
                     try
                     {
                         Integer.parseInt(((Node) left).getValue());
                         return new Node("#t", Type.Word);
-                    }
-                    catch (NumberFormatException e)
+                    } catch (NumberFormatException e)
                     {
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isBoolean("boolean?", new Applicator()
-        {
+        }), isBoolean("boolean?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Boolean?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
-                    if (((Node) left).getValue().matches("#f|#t"))
+                    if(((Node) left).getValue().matches("#f|#t"))
                     {
                         return new Node("#t", Type.Word);
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isChar("char?", new Applicator()
-        {
+        }), isChar("char?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Char?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
-                    if (((Node) left).getValue().matches("#\\\\."))
+                    if(((Node) left).getValue().matches("#\\\\."))
                     {
                         return new Node("#t", Type.Word);
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isString("string?", new Applicator()
-        {
+        }), isString("string?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("String?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
-                    if (((Node) left).getValue().matches("\".*\""))
+                    if(((Node) left).getValue().matches("\".*\""))
                     {
                         return new Node("#t", Type.Word);
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isReal("real?", new Applicator()
-        {
+        }), isReal("real?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Real?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof Node)
+                if(left instanceof Node)
                 {
                     try
                     {
                         String text = ((Node) left).getValue();
                         Double.parseDouble(text);
                         return new Node("#t", Type.Word);
-                    }
-                    catch (NumberFormatException e)
+                    } catch (NumberFormatException e)
                     {
                     }
                 }
                 return new Node("#f", Type.Word);
             }
-        }), isPair("pair?", new Applicator()
-        {
+        }), isPair("pair?", new Applicator() {
             @Override
             public TreePart apply(Interpreter i, Blank node)
             {
                 // // System.out.println("Pair?");
                 TreePart left = node.getLeft();
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
                     left = i.interpret((CodeTree) left);
                 }
-                if (left instanceof CodeTree)
+                if(left instanceof CodeTree)
                 {
-                    if (((CodeTree) left).getLeft() != null)
+                    if(((CodeTree) left).getLeft() != null)
                     {
                         return new Node("#t", Type.Word);
                     }
@@ -1347,7 +1222,7 @@ public class Interpreter
         {
             for (ReservedWord rw : ReservedWord.values())
             {
-                if (rw.word.equals(s))
+                if(rw.word.equals(s))
                 {
                     // // System.out.printf("Acting on reserved word: '%s'\n",
                     // s);
@@ -1382,13 +1257,12 @@ public class Interpreter
             // .getSymbolTableStack().getLastLambdaLookup());
             // // System.out.println(node.toString(0));
             SymbolTable s = new SymbolTable();
-            if (args.getLeft() != null)
+            if(args.getLeft() != null)
             {
                 String symbolName = ((Node) args.getLeft()).getValue();
-                TreePart symbolValue = node.getLeft() instanceof Node ? (Node) node
-                                .getLeft() : i.interpret((CodeTree) node
-                                .getLeft());
-                if (symbolValue instanceof CodeTree)
+                TreePart symbolValue = node.getLeft() instanceof Node ? (Node) node.getLeft() : i
+                                .interpret((CodeTree) node.getLeft());
+                if(symbolValue instanceof CodeTree)
                 {
                     CodeTree tree = new CodeTree();
                     tree.setLeft(new Node("quote", Type.ReservedWord));
@@ -1407,10 +1281,9 @@ public class Interpreter
                 {
                     // // System.out.println("ARGSRIGHT not null");
                     symbolName = ((Node) argsRight.getLeft()).getValue();
-                    symbolValue = node.getLeft() instanceof Node ? (Node) node
-                                    .getLeft() : i.interpret((CodeTree) node
+                    symbolValue = node.getLeft() instanceof Node ? (Node) node.getLeft() : i.interpret((CodeTree) node
                                     .getLeft());
-                    if (symbolValue instanceof CodeTree)
+                    if(symbolValue instanceof CodeTree)
                     {
                         CodeTree tree = new CodeTree();
                         tree.setLeft(new Node("quote", Type.ReservedWord));
