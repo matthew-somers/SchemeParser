@@ -1,0 +1,269 @@
+(define member? 
+    (lambda 
+        (item lst) 
+        (cond 
+            (
+                (null? lst) #f) 
+            (
+                (equal? item 
+                    (car lst)) #t) 
+            (else 
+                (member? item 
+                    (cdr lst))))))
+>> [member?]
+(member? 3 
+    (quote 
+        (1 2 3)))
+>> #t
+(member? 
+    (quote b) 
+    (quote 
+        (a 
+            (b c) d)))
+>> #f
+(define remove-last 
+    (lambda 
+        (item lst) 
+        (cond 
+            (
+                (null? lst) 
+                (quote 
+                    ())) 
+            (
+                (and 
+                    (equal? item 
+                        (car lst)) 
+                    (not 
+                        (member? item 
+                            (cdr lst)))) 
+                (cdr lst)) 
+            (else 
+                (cons 
+                    (car lst) 
+                    (remove-last item 
+                        (cdr lst)))))))
+>> [remove-last]
+(remove-last 
+    (quote a) 
+    (quote 
+        (b a n a n a s)))
+>> (b a n a n s)
+(remove-last 
+    (quote 
+        (a b)) 
+    (quote 
+        (a b 
+            (a b) a b 
+            (b a) a b 
+            (a b) a b)))
+>> (a b 
+    (a b) a b 
+    (b a) a b a b)
+(define same-structure? 
+    (lambda 
+        (x y) 
+        (cond 
+            (
+                (and 
+                    (null? x) 
+                    (null? y)) #t) 
+            (
+                (null? x) #f) 
+            (
+                (null? y) #f) 
+            (
+                (and 
+                    (pair? 
+                        (car x)) 
+                    (pair? 
+                        (car y))) 
+                (and 
+                    (same-structure? 
+                        (car x) 
+                        (car y)) 
+                    (same-structure? 
+                        (cdr x) 
+                        (cdr y)))) 
+            (else 
+                (and 
+                    (same-type? 
+                        (car x) 
+                        (car y)) 
+                    (same-structure? 
+                        (cdr x) 
+                        (cdr y)))))))
+>> [same-structure?]
+(define float? 
+    (lambda 
+        (x) 
+        (and 
+            (real? x) 
+            (not 
+                (integer? x)))))
+>> [float?]
+(define same-type? 
+    (lambda 
+        (x y) 
+        (or 
+            (and 
+                (symbol? x) 
+                (symbol? y)) 
+            (and 
+                (integer? x) 
+                (integer? y)) 
+            (and 
+                (float? x) 
+                (float? y)) 
+            (and 
+                (boolean? x) 
+                (boolean? y)) 
+            (and 
+                (char? x) 
+                (char? y)) 
+            (and 
+                (string? x) 
+                (string? y)))))
+>> [same-type?]
+(same-structure? 
+    (quote 
+        (1 
+            (a 
+                (b 3.14) 
+                (
+                    (c))))) 
+    (quote 
+        (3 
+            (z 
+                (x 1.23) 
+                (
+                    (q))))))
+>> #t
+(same-structure? 
+    (quote 
+        (1 
+            (a 
+                (b 3.14) 
+                (
+                    (c))))) 
+    (quote 
+        (3 
+            (z 
+                (x 3) 
+                (
+                    (q))))))
+>> #f
+(same-structure? 
+    (quote 
+        (1 2 3 4 5)) 
+    (quote 
+        (5 4 3 2)))
+>> #f
+(same-structure? 
+    (quote 
+        ()) 
+    (quote 
+        ()))
+>> #t
+(same-structure? 
+    (quote 
+        (
+            ("hello") "world")) 
+    (quote 
+        (
+            ("good-bye") "sam")))
+>> #t
+(define sandwich-first 
+    (lambda 
+        (a b lst) 
+        (cond 
+            (
+                (null? lst) 
+                (quote 
+                    ())) 
+            (
+                (null? 
+                    (cdr lst)) lst) 
+            (
+                (and 
+                    (equal? b 
+                        (car lst)) 
+                    (equal? b 
+                        (cadr lst))) 
+                (append 
+                    (list b a b) 
+                    (cddr lst))) 
+            (else 
+                (cons 
+                    (car lst) 
+                    (sandwich-first a b 
+                        (cdr lst)))))))
+>> [sandwich-first]
+(sandwich-first 
+    (quote meat) 
+    (quote bread) 
+    (quote 
+        (bread bread)))
+>> (bread meat bread)
+(sandwich-first 
+    (quote meat) 
+    (quote bread) 
+    (quote 
+        ()))
+>> ()
+(sandwich-first 
+    (quote meat) 
+    (quote bread) 
+    (quote 
+        (meat meat)))
+>> (meat meat)
+(define min-to-head 
+    (lambda 
+        (lst) 
+        (cond 
+            (
+                (null? lst) 
+                (quote 
+                    ())) 
+            (
+                (null? 
+                    (cdr lst)) lst) 
+            (else 
+                (let* 
+                    (
+                        (new-lst 
+                            (min-to-head 
+                                (cdr lst))) 
+                        (second 
+                            (car new-lst))) 
+                    (if 
+                        (> 
+                            (car lst) second) 
+                        (cons second 
+                            (cons 
+                                (car lst) 
+                                (cdr new-lst))) lst))))))
+>> [min-to-head]
+(min-to-head 
+    (quote 
+        (5 8 1 0 6 2 1 9)))
+>> (0 5 8 1 6 2 1 9)
+(define sort 
+    (lambda 
+        (lst) 
+        (if 
+            (null? lst) 
+            (quote 
+                ()) 
+            (let 
+                (
+                    (mth 
+                        (min-to-head lst))) 
+                (cons 
+                    (car mth) 
+                    (sort 
+                        (cdr mth)))))))
+>> [sort]
+(sort 
+    (quote 
+        (5 8 1 0 6 2 1 9)))
+>> (0 1 1 2 5 6 8 9 )
